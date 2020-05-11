@@ -12,6 +12,10 @@ T## 1 Getting Started
 # install.packages("numDeriv")
 ```
 
+```{r}
+p_load(network, statnet, sna, numDeriv)
+```
+
 
 ###########################################################
 ###########################################################
@@ -429,47 +433,105 @@ rownames(relations) <- nodeInfo$name
 colnames(relations) <- nodeInfo$name
 relations
 ```
-
-
-
-
+Why Factrs are dangerous
+```{r}
 #Why did we set stringsAsFactors=FALSE?
-relations_wFactors<-read.csv("vertexAttributes.csv",header=T,stringsAsFactors=TRUE)
+relations_wFactors<-read.csv("./data/vertexAttributes.csv",header=T,stringsAsFactors=TRUE)
+relations_wFactors
+```
+```{r}
 relations_wFactors[1,2]<-"Derek"
+relations_wFactors
+```
 
+```{r}
 numFactor<-as.factor(c(1,3,5))
-numFactor+1
-as.numeric(numFactor)
+numFactor
+```
 
-#For more information. . .
-?list.files
-?read.csv
-?as.matrix
-?rownames
+```{r}
+numFactor+1
+
+```
+
+```{r}
+as.numeric(numFactor)
+```
 
 ###########################################################
 ##3.2 Creating network objects, working with edgelists
 
+```{r}
+relations
+```
+
+```{r}
 nrelations<-network(relations,directed=FALSE) # Create a network object based on relations
-nrelations # Get a quick description of the data
+nrelations
+```
+
+```{r}
 nempty <- network.initialize(5) # Create an empty graph with 5 vertices
 nempty # Compare with nrelations
+```
 
-edgelist<-read.csv("edgeList.csv",header=T,stringsAsFactors=F)
+Edge / ties / links / associations
+
+```{r}
+edgelist<-read.csv("./data/edgeList.csv",header=T,stringsAsFactors=F)
 head(edgelist)
+```
+```{r}
+?network()
+```
 
+matrix.type	
+one of "adjacency", "edgelist", "incidence". 
+See edgeset.constructors for details and optional additional arguments
+
+```{r}
 nedge<-network(edgelist,matrix.type="edgelist")
 nedge
+```
+```{r}
 nedge[,]
+
+```
+```{r}
 plot(nedge,displaylabels=T)
+```
 
-nedge<-network(edgelist,matrix.type="edgelist",ignore.eval=F,names.eval="weight")
+```{r}
+nedge<-network(edgelist,
+               matrix.type="edgelist",
+               ignore.eval=F,
+               names.eval="weight")
 nedge
+```
+```{r}
+class(nedge)
+```
+
+
+```{r}
 nedge[,]
-as.matrix(nedge,"weight")
+```
+matrix(data = NA, nrow = 1, ncol = 1, byrow = FALSE,
+       dimnames = NULL)
 
-plot(nedge,displaylabels=T,edge.lwd=as.sociomatrix(nedge,"weight")*5)
+```{r}
+as.matrix(nedge)
+```
+```{r}
+plot(nedge, displaylabels = TRUE)
+```
 
+
+```{r}
+plot(nedge,
+     displaylabels=T,
+     edge.lwd=as.sociomatrix(nedge,"weight")*5)
+```
 #For more information. . .
 ?network 
 ?as.network.matrix
@@ -477,19 +539,58 @@ plot(nedge,displaylabels=T,edge.lwd=as.sociomatrix(nedge,"weight")*5)
 ###########################################################
 ##3.3 Description and Visualization
 
+
+```{r}
 summary(nrelations) # Get an overall summary
+```
+```{r}
 network.dyadcount(nrelations) # How many dyads in nflo?
+```
+
+```{r}
+?network.dyadcount()
+```
+network.dyadcount returns the number of possible dyads within a network, removing those flagged as missing if desired. If the network is directed, directed dyads are counted accordingly.
+
+```{r}
 network.edgecount(nrelations) # How many edges are present?
+```
+
+```{r}
 network.size(nrelations) # How large is the network?
+```
+
+```{r}
 as.sociomatrix(nrelations) # Show it as a sociomatrix
-nrelations[,] # Another way to do it
+```
 
+```{r}
+relations[,] # Another way to do it
+```
+
+```{r}
 plot(nrelations,displaylabels=T) # Plot with names
-plot(nrelations,displaylabels=T,mode="circle") # A less useful layout...
+```
+```{r}
+?network::plot()
+```
 
+
+```{r}
+plot(nrelations,displaylabels=T,mode="circle") # A less useful layout...
+```
+
+```{r}
 library(sna) # Load the sna library
 gplot(nrelations) # Requires sna
+```
+
+```{r}
 gplot(relations) # gplot Will work with a matrix object too
+```
+
+
+
 
 #For more information. . .
 ?summary.network
