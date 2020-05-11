@@ -184,16 +184,44 @@ a%*%t(b)
 ```
 
 
-
 #logical operators (generally) work like arithmetic ones
+
+```{r}
 a > 0 # each value greater than zero?
+
+```
+
+```{r}
 a == b # corresponding values equivalent?
+
+```
+
+```{r}
 a != b # corresponding values not equivalent?
+```
+
+```{r}
 !(a == b) # same as above
+```
+
+```{r}
 (a>2) | (b>4) # the OR operator
+```
+
+```{r}
 (a>2) & (b>4) # the AND operator
+```
+
+The short answer is that *&& and || only ever return a single (scalar, length-1 vector) TRUE or FALSE value*, whereas | and & return a vector after doing element-by-element comparisons.
+
+```{r}
 (a>2) || (b>4) # beware the "double-pipe"!
+```
+
+```{r}
 (a>2) && (b>4) # (and the "double-ampersand"!)
+```
+
 
 #ditto for many other basic transformations
 log(a)
@@ -203,50 +231,138 @@ log((sqrt(a+b)+a)*b) # as recursive as we wanna be
 
 ###########################################################
 ##2.4 Data Frames
+
+```{r}
 d <- data.frame(income=1:5,sane=c(T,T,T,T,F),name=LETTERS[1:5])
 d
+```
+```{r}
 d[1,2] # acts a lot like a matrix!
+```
+```{r}
 d[,1]*5
+```
+```{r}
 d[-1,]
+```
+
+```{r}
 d$sane # can use dollar sign notation
+```
+
+```{r}
 d$sane[3]<-FALSE # making changes
 d
-d[2,3] # shows factors for string values
+```
 
+```{r}
+d[2,3] # shows factors for string values
+```
+
+```{r}
+d
+```
+```{r}
 #if you want to do without factors
 d$name <- LETTERS[1:5] # eliminate evil factors by overwriting
-d[2,3]
-d <- data.frame(income=1:5,sane=c(T,T,T,T,F),name=LETTERS[1:5],stringsAsFactors=FALSE)
 d
+```
+Use factors
+```{r}
+d <- data.frame(income=1:5,sane=c(T,T,T,T,F),name=LETTERS[1:5],stringsAsFactors=TRUE)
+d
+```
+```{r}
+d <- as.data.frame(cbind(poo = 1:5, pee= 2:6)) # can create from matrices
+d
+```
 
-d <- as.data.frame(cbind(1:5,2:6)) # can create from matrices
-d
+```{r}
 is.data.frame(d) # how can we tell it's not a matrix?
 is.matrix(d) # the truth comes out
+```
+
 
 ###########################################################
 ##2.5 Finding built-in data sets
 #Many packages have built-in data for testing and educational purposes
 data() # lists them all
 ?USArrests # get help on a data set
-data(USArrests) # load the data set
+
 USArrests # view the object
+
+```{r}
+data(USArrests) # load the data set
+```
+
 
 ##2.6 Elementary visualization
 #R's workhorse is the "plot" command
-plot(USArrests$Murder,USArrests$UrbanPop) # using dollar sign notation
-plot(USArrests$Murder,USArrests$UrbanPop,log="xy") # log-log scale
 
+```{r}
+plot(USArrests$Murder,USArrests$UrbanPop) # using dollar sign notation
+```
+
+```{r}
+plot(USArrests$Murder,USArrests$UrbanPop,log="xy") # log-log scale
+```
+
+```{r}
 #Adding plot title and axis labels
 plot(USArrests$Murder,USArrests$Assault,xlab="Murder",ylab="Assault",main="USArrests")
 
+```
+```{r}
+plot(USArrests$Murder,USArrests$Assault,xlab="Murder",ylab="Assault", main="USArrests")
+```
+
+
+```{r}
+plot(USArrests$Murder,USArrests$Assault,xlab="Murder",ylab="Assault", main="USArrests",type="n" # negates plott points)
+```
+
+
+```{r}
 #Can also add text
-plot(USArrests$Murder,USArrests$Assault,xlab="Murder",ylab="Assault", main="USArrests",type="n")
+plot(USArrests$Murder,USArrests$Assault,xlab="Murder",ylab="Assault", main="USArrests", type="n")
 text(USArrests$Murder,USArrests$Assault,rownames(USArrests))
+```
 
 #Histograms and boxplots are often helpful
+
+
+```{r}
 hist(USArrests$Murder)
+```
+```{r}
+USArrests
+```
+```{r}
+names(USArrests)
+```
+
+```{r}
+row.names(USArrests)
+```
+df %>%
+    rownames_to_column('gene') %>%
+    filter_if(is.numeric, all_vars(. >= 8)) %>%
+    column_to_rownames('gene')
+```{r}
+library(tidyverse)
+```
+
+
+```{r}
+USArrests %>% rownames_to_column() %>% filter(rowname == "Alabama") %>% column_to_rownames("rowname")
+  
+```
+
+
+
+```{r}
 boxplot(USArrests)
+```
 
 ###########################################################
 ###########################################################
@@ -258,20 +374,64 @@ boxplot(USArrests)
 getwd() # Check what directory you're in
 list.files() # Check what's in the working directory
 
+```{r}
+list.files()
+```
+
+```{r}
+?list.files
+```
+list.files(path = ".", pattern = NULL, all.files = FALSE,
+           full.names = FALSE, recursive = FALSE,
+           ignore.case = FALSE, include.dirs = FALSE, no.. = FALSE)
+
+```{r}
+list.files(path = "./statnet_jasny_NetworkAnalysis")
+```
+
+```{r}
+library(here)
+```
+
 #Read an adjacency matrix (R stores it as a data frame by default)
-relations <- read.csv("relationalData.csv",header=FALSE,stringsAsFactors=FALSE)
-relations
+
+```{r}
+relations_df <- read.csv("./data/relationalData.csv",header=FALSE,stringsAsFactors=FALSE)
+relations_df
+rownames(relations_df) <- 1:9
+rownames(relations_df)
+has_rownames(relations_df)
+```
+
+
+```{r}
+rowid_to_column(relations_df)
+```
+
+
 #Here's a case where matrix format is preferred
+
+
+```{r}
 relations <- as.matrix(relations) # convert to matrix format
+relations
+```
+
 
 #Read in some vertex attribute data (okay to leave it as a data frame)
-nodeInfo <- read.csv("vertexAttributes.csv",header=TRUE,stringsAsFactors=FALSE)
+```{r}
+nodeInfo <- read.csv("./data/vertexAttributes.csv",header=TRUE,stringsAsFactors=FALSE)
 nodeInfo
-
+```
+```{r}
 #Since our relational data has no row/column names, let's set them now
 rownames(relations) <- nodeInfo$name
 colnames(relations) <- nodeInfo$name
 relations
+```
+
+
+
 
 #Why did we set stringsAsFactors=FALSE?
 relations_wFactors<-read.csv("vertexAttributes.csv",header=T,stringsAsFactors=TRUE)
