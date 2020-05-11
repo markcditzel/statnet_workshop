@@ -13,6 +13,7 @@ T## 1 Getting Started
 ```
 
 ```{r}
+library(pacman)
 p_load(network, statnet, sna, numDeriv)
 ```
 
@@ -322,7 +323,7 @@ plot(USArrests$Murder,USArrests$Assault,xlab="Murder",ylab="Assault", main="USAr
 
 
 ```{r}
-plot(USArrests$Murder,USArrests$Assault,xlab="Murder",ylab="Assault", main="USArrests",type="n" # negates plott points)
+plot(USArrests$Murder,USArrests$Assault,xlab="Murder",ylab="Assault", main="USArrests",type="n") # negates plott points)
 ```
 
 
@@ -571,9 +572,6 @@ relations[,] # Another way to do it
 ```{r}
 plot(nrelations,displaylabels=T) # Plot with names
 ```
-```{r}
-?network::plot()
-```
 
 
 ```{r}
@@ -602,27 +600,90 @@ gplot(relations) # gplot Will work with a matrix object too
 
 ###########################################################
 ##3.4 Working With Edges
+
+```{r}
 #Adding Edges
 g <- network.initialize(5) # Create an empty graph
+g
+```
+```{r}
 g[1,2] <- 1 # Add an edge from 1 to 2
+```
+
+```{r}
 g[2,] <- 1 # Add edges from 2 to everyone else
+```
+
+```{r}
 g # Examine the result
+```
+```{r}
+plot(g)
+```
+```{r}
+as.sociomatrix(g) 
+```
+
+```{r}
 m <- matrix(0, nrow=5, ncol=5) # Create an adjacency matrix
+m
+
+```
+
+```{r}
 m[3,4:5] <- 1 # Add entries from 3 to 4 and 5
+m
+```
+```{r}
+g
+```
+```{r}
+as.sociomatrix(g)
+```
+
+
+```{r}
 g[m>0] <- 1 # Add more entries
 g
+```
+```{r}
+as.sociomatrix(g)
+```
 
+```{r}
 #Delete edges
-g[3,5] <- 0 # Remove the edge from 3 to 5
-g # Its gone!
+g[3,5] <- 1 # Remove the edge from 3 to 5
+g[3,1] <- 1
+g[4,5] <- 1
+as.sociomatrix(g) # Its gone!
+```
+
+```{r}
 g[,] <- 0 # Remove all edges
 g # Now, an empty graph
+as.sociomatrix(g)
+```
+```{r}
+nrelations
+plot(nrelations, displaylabels = TRUE)
+summary(nrelations)
+```
 
+
+```{r}
 #Testing adjacency
 nrelations[4,5] # Emma to Sarah?
 nrelations[4,] # Entire Emma row
+```
+
+```{r}
 nrelations[1:4,5:8] # Subsets are possible
+```
+
+```{r}
 nrelations[-9,-9] # Leaving Gil out of the picture
+```
+
 
 #Setting edge values
 m<-nrelations[,] # copy over the relational structure
