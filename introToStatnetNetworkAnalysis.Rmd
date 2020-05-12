@@ -683,21 +683,130 @@ nrelations[1:4,5:8] # Subsets are possible
 ```{r}
 nrelations[-9,-9] # Leaving Gil out of the picture
 ```
-
-
 #Setting edge values
+```{r}
 m<-nrelations[,] # copy over the relational structure
-m[upper.tri(m)>0]<-rep(1:3,times=3) # give different edge values
-m<-symmetrize(m,rule="upper")
 m
+```
 
-nrelations %e% "strength" <- m # Add the valued ties back in
+```{r}
+?upper.tri()
+```
+
+
+```{r}
+(m2 <- matrix(1:20, 4, 5))
+
+```
+```{r}
+lower.tri(m2)
+```
+```{r}
+upper.tri(m2)
+```
+```{r}
+m2[lower.tri(m2)]
+```
+
+```{r}
+m2[lower.tri(m2)] <- NA
+m2
+```
+```{r}
+upper.tri(m)
+```
+
+```{r}
+m[upper.tri(m)]
+```
+
+
+```{r}
+length(m[upper.tri(m)])
+```
+
+```{r}
+m[upper.tri(m)>0]
+```
+
+```{r}
+all(m[upper.tri(m)] == m[upper.tri(m)>0])
+```
+
+
+```{r}
+rep(1:3, times = 3)
+```
+
+```{r}
+m[upper.tri(m)]
+```
+
+```{r}
+m[upper.tri(m)>0]
+```
+
+
+```{r}
+m[upper.tri(m)>0]<-rep(1:3,times=3) # give different edge values
+m
+```
+
+```{r}
+?symmetrize
+```
+
+
+```{r}
+m<-symmetrize(m,rule="upper") #pper: Copy the upper triangle over the lower triangle
+m
+```
+
+```{r}
+#T - pipe 
+rnorm(100) %>%
+  matrix(ncol = 2) %T>% 
+  plot() %>%
+  str()
+
+```
+```{r}
+nrelations
+```
+
+
+```{r}
+nrelations %e% "strength" <- m # Add the valued ties back in - presume %e% is for the "edge" atttibutes
+
+nrelations
+```
+
+```{r}
+as.sociomatrix(nrelations)
+```
+
+```{r}
+plot(nrelations, displaylabels = TRUE)
+```
 
 #Retrieving edge values
+
+```{r}
 list.edge.attributes(nrelations) # See whats available
+```
+
+```{r}
 nrelations %e% "strength" # Use the %e% operator
+```
+
+```{r}
 as.sociomatrix(nrelations,attrname="strength") # Can also do it this way
+```
+
+```{r}
 nrelations[,] # Original tie structure is preserved
+
+```
 
 #For more information. . .
 ?network.extraction
