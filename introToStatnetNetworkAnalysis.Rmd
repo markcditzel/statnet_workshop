@@ -818,20 +818,51 @@ nrelations[,] # Original tie structure is preserved
 
 ###########################################################
 ##3.5 Network and Vertex Attributes 
+
 #Add some attributes
+
+```{r}
+nodeInfo
+```
+
+```{r}
 nrelations %v% "id" <- nodeInfo$id # Add in our vertex attributes
+nrelations
+```
+Add in extra variable to the vertex attributes
+
+```{r}
 nrelations %v% "age" <- nodeInfo$age
 nrelations %v% "sex" <- nodeInfo$sex
 nrelations %v% "handed" <- nodeInfo$handed
+nrelations
+```
+
+```{r}
 nrelations %v% "lastDocVisit" <- nodeInfo$lastDocVisit
+```
+
 
 #Listing attributes
+
+```{r}
 list.vertex.attributes(nrelations) # List all vertex attributes
+```
+
+```{r}
 list.network.attributes(nrelations) # List all network attributes
+```
+
 
 #Retrieving attributes
+
+```{r}
 nrelations %v% "age" # Retrieve vertex ages
+```
+
+```{r}
 nrelations %v% "id" # Retrieve vertex ids
+```
 
 #For more information. . .
 ?attribute.methods
@@ -840,26 +871,68 @@ nrelations %v% "id" # Retrieve vertex ids
 ###########################################################
 ##4 Classical Network Analysis with the SNA package
 ##4.1 Getting started
+
+```{r}
 library(sna) # Load the sna library
+```
+
+```{r}
 library(help="sna") # See a list of help pages for sna package
-load("IntroToSNAinR.Rdata") # Load supplemental workshop data
+```
+
+```{r}
+load("./statnet_jasny_NetworkAnalysis/IntroToSNAinR.Rdata") # Load supplemental workshop data
+```
+
 
 ###########################################################
 ##4.2 Network data in SNA
-#The sna package can handle network data in many forms. For instance, the function gden() calculates network density; we can use it on a network object, an adjacency matrix, a list of such matrices, etc.
+#The sna package can handle network data in many forms. 
 
+```{r}
 data(flo)
 flo # Adjacency form
+```
+For instance, the function gden() calculates network density; we can use it on a network object, an adjacency matrix, a list of such matrices, etc.
+```{r}
 gden(flo)
-nflo<-network(flo,directed=FALSE) # Network form
-gden(nflo)
+```
 
-#The sna package also supports a special kind of matrix called an \sna edgelist." These are three-column matrices, each row of which represents an edge (via its sender, recipient, and value, respectively). These sna edgelists" have special attributes that indicate their size, vertex names (if any), and bipartite status (if applicable).
+```{r}
+?network()
+```
+
+
+```{r}
+nflo<-network(flo,directed=FALSE) # Network form
+nflo
+```
+```{r}
+gden(nflo)
+```
+
+#The sna package also supports a special kind of matrix called an \sna edgelist." These are three-column matrices, each row of which represents an edge (via its sender, recipient, and value, respectively). 
+
+These sna edgelists" have special attributes that indicate their size, vertex names (if any), and bipartite status (if applicable).
+
+NB Bipartite graphs involve two sets with each edge going from a vertex in one set to a vertex in the other set. There are no edges connecting vertices within the same set. 
+
+```{r}
 eflo<-as.edgelist.sna(flo) # Coerce flo to an sna edgelist
 eflo
+```
+
+```{r}
 attr(eflo,"n") # How many vertices are there?
+```
+
+```{r}
 attr(eflo,"vnames") # Are there vertex names?
+```
+
+```{r}
 as.sociomatrix.sna(eflo) # Can transform back w/ as.sociomatrix.sna 
+```
 
 #For more information. . .
 ?as.edgelist.sna
@@ -870,72 +943,248 @@ as.sociomatrix.sna(eflo) # Can transform back w/ as.sociomatrix.sna
 ###########################################################
 ##4.3 Network visualization with gplot()
 #Plotting the data we imported earlier
+
+```{r}
+?gplot()
+```
+
+
+```{r}
+#from sna package
 gplot(nrelations)
+```
+
+```{r}
 gplot(nrelations,displaylabels=TRUE) # This time with labels
+```
+
 #Let's color the nodes in sex-stereotypic colors
+
+```{r}
 nodeColors<-ifelse(nodeInfo$sex=="F","hotpink","dodgerblue")
+```
+
+```{r}
 gplot(relations,gmode="graph",displaylabels=TRUE,vertex.col=nodeColors)
+```
 
 #Using data we just loaded in, plot the contiguity among nations in 1993 (from the Correlates of War (CoW)1 project)
+
+```{r}
 gplot(contig_1993) # The default visualization
+```
+
+```{r}
 gplot(contig_1993, usearrows=FALSE) # Turn off arrows manually
+```
+
+gmode = String indicating the type of graph being evaluated. 
+"digraph" indicates that edges should be interpreted as directed; 
+"graph" indicates that edges are undirected; 
+"twomode" indicates that data should be interpreted as two-mode (i.e., rows and columns are distinct vertex sets). gmode is set to "digraph" by default.
+
+```{r}
 gplot(contig_1993, gmode="graph") # Can also tell gplot the data is undirected
+```
 
 #We can add labels to the vertices
-gplot(contig_1993, gmode="graph",displaylabels=TRUE,label.cex=0.5,label.col="blue")
+```{r}
+gplot(contig_1993, 
+      gmode="graph",
+      displaylabels=TRUE,
+      label.cex=.5,
+      label.col="blue")
+```
 
 #Other ways to specify the labeling
-gplot(contig_1993,gmode="graph",label=network.vertex.names(contig_1993),label.cex=0.5,label.col="blue")
 
-#Here's an example of directed data|militarized interstate disputes (MIDs) for 1993
-gplot(mids_1993,label.cex=0.5,label.col="blue",displaylabels=TRUE)
+```{r}
+gplot(contig_1993,
+      gmode="graph",
+      label=network.vertex.names(contig_1993),
+      label.cex=0.5,
+      label.col="blue")
+```
+
+#Here's an example of *directed* data|militarized interstate disputes (MIDs) for 1993
+```{r}
+gplot(mids_1993,
+      label.cex=0.5,
+      label.col="blue",
+      displaylabels=TRUE)
+```
 
 #All those isolates can get in the way|we can suppress them using displayisolates
+```{r}
 gplot(mids_1993,label.cex=0.5,label.col="blue",displaylabels=TRUE,displayisolates=FALSE)
+```
 
 #The default layout algorithm is that of Frutchterman-Reingold (1991), can use others
+
+```{r}
 gplot(mids_1993,label.cex=0.5,label.col="blue",displaylabels=TRUE,displayisolates=FALSE,mode="circle") # The infamous circle
+```
 
 #or perhaps
+
+```{r}
 gplot(mids_1993,label.cex=0.5,label.col="blue",displaylabels=TRUE,displayisolates=FALSE,mode="mds") # MDS of position similarity
+```
+
+```{r}
+contig_1993[,]
+```
+
 
 #When a layout is generated, the results can be saved for later reuse:
+```{r}
 coords <- gplot(contig_1993,gmode="graph",label=colnames(contig_1993[,]),label.cex=0.5,label.col="blue") # Capture the magic of the moment
-coords # Show the vertex coordinates
+```
+```{r}
+head(coords) # Show the vertex coordinates
+```
 
 #Saved (or a priori) layouts can be used via the coord argument
+
+```{r}
+mids_1993
+```
+```{r}
+as.sociomatrix(mids_1993)
+```
+
+NB - mids_1993 lacks any information about connections - just has a en empty matrix
+
+```{r}
 gplot(mids_1993,gmode="graph",label=colnames(contig_1993[,]),label.cex=0.5,label.col="blue",coord=coords)
 
+```
+
+
 #When the default settings are insuficient, interactive mode allows for tweaking
+```{r}
 coords <- gplot(contig_1993, interactive=TRUE) # Modify and save
+```
+
+```{r}
 gplot(contig_1993,coord=coords,displaylabels=TRUE,gmode="graph",label.cex=0.5,label.col="blue") # Should reproduce the modified layout
+```
+
 
 #For more information. . .
 ?gplot ?gplot.layout
 
 ###########################################################
 ##4.4 Basic centrality indices: degree, betweenness, and closeness
-#We begin with the simplest case: degree centrality
+
+#We begin with the simplest case: *degree centrality*
 
 #Component information can be obtained in various ways
+
+```{r}
+mids_1993
+```
+
+
+```{r}
+as.sociomatrix.sna(mids_1993)
+```
+
+```{r}
+class(mids_1993)
+```
+
+```{r}
+?components()
+```
+
+In graph theory, a component, sometimes called a connected component, of an undirected graph is a subgraph in which any two vertices are connected to each other by paths, and which is connected to no additional vertices in the supergraph. 
+
+For example, the graph shown in the illustration has three components. A vertex with no incident edges is itself a component. 
+
+A graph that is itself connected has exactly one component, consisting of the whole graph.
+
+```{r}
 components(mids_1993) # Strong component count
+```
+
+```{r}
 components(mids_1993, connected="weak") # Weak component count
+```
+
+weak: v_1 is connected to v_2 iff there exists a semi-path from v_1 to v_2 (i.e., a path in the weakly symmetrized graph)
+
+unilateral: v_1 is connected to v_2 iff there exists a directed path from v_1 to v_2 or a directed path from v_2 to v_1
+
+strong: v_1 is connected to v_2 iff there exists a directed path from v_1 to v_2 and a directed path from v_2 to v_1
+
+recursive: v_1 is connected to v_2 iff there exists a vertex sequence v_a,...,v_z such that v_1,v_a,...,v_z,v_2 and v_2,v_z,...,v_a,v_1 are directed paths
+
+```{r}
+?component.dist
+```
+
+
+```{r}
 cd <- component.dist(mids_1993, connected="weak") # Get weak components
-cd
+class(cd)
+str(cd)
+```
+membership	
+A vector of component memberships, by vertex
+
+csize	
+A vector of component sizes, by component
+
+cdist	
+A vector of length |V(G)| with the (unnormalized) empirical distribution function of component sizes
+
 
 #Component sizes
-plot(1:length(cd$cdist),cd$cdist,xlab="Size",ylab="Frequency")
+
+```{r}
+cd$cdist
+```
+
+
+```{r}
+length(cd$cdist)
+```
+
+```{r}
+cd$cdist
+```
+
+
+```{r}
+plot(x=1:length(cd$cdist),y=(cd$cdist),xlab="Size/Distance",ylab="Frequency")
+```
+
 
 #Who's in the largest component?
+
+```{r}
 cl <- component.largest(mids_1993, connected="weak")
 cl
+```
 
 #Plot the largest weak component
+```{r}
 gplot(mids_1993[cl,cl], 
       boxed.lab=FALSE, 
       label.cex=0.5,
       label.col=4,
       label=network.vertex.names(mids_1993)[cl])
+```
+#Plot the largest weak component
+```{r}
+gplot(mids_1993[cl,cl], 
+      boxed.lab=FALSE, 
+      label.cex=0.5,
+      label.col=4,
+      label=network.vertex.names(mids_1993)[cl])
+```
+
 
 #Likewise, many routines exist for handling isolates
 is.isolate(mids_1993, 3) # Is the third vertex (BHM) an isolate?
@@ -962,15 +1211,46 @@ contig.dist$counts
 
 ###########################################################
 ##4.2 Basic centrality indices: degree, betweenness, and closeness
+
 #We begin with the simplest case: degree centrality
+
+Centrality
+In graph analytics, Centrality is a very important concept in identifying important nodes in a graph. It is used to measure the importance (or “centrality” as in how “central” a node is in the graph) of various nodes in a graph. Now, each node could be important from an angle depending on how “importance” is defined. 
+
+Centrality comes in different flavors and each flavor or a metric defines importance of a node from a different perspective and further provides relevant analytical information about the graph and its nodes.
+
+Degree Centrality
+The first flavor of Centrality we are going to discuss is “Degree Centrality”.To understand it, let’s first explore the concept of degree of a node in a graph.
+
+In a non-directed graph, degree of a node is defined as the number of direct connections a node has with other nodes. Looking at the graph below:
+
+In a directed graph (each edge has a direction), degree of a node is further divided into In-degree and Out-degree. In-degree refers to the number of edges/connections incident on it and Out-degree refers to the number of edges/connections from it to other nodes.
+
+```{r}
+as.sociomatrix.sna(mids_1993)
+```
+
+
+```{r}
 degree(mids_1993) # Default: total degree
+```
+```{r}
 ideg <- degree(mids_1993, cmode="indegree") # Indegree for MIDs
+ideg
+```
+```{r}
 odeg <- degree(mids_1993, cmode="outdegree") # Outdegree for MIDs
+odeg
+```
+```{r}
 all(degree(mids_1993) == ideg+odeg) # In + out = total?
+```
 
 #Once centrality scores are computed, we can handle them using standard R methods:
-plot(ideg, 
-     odeg, 
+
+```{r}
+plot(x=ideg, 
+     y=odeg, 
      type="n", 
      xlab="Incoming MIDs", 
      ylab="Outgoing MIDs") # Plot ideg by odeg
@@ -982,8 +1262,10 @@ text(jitter(ideg),
      network.vertex.names(contig_1993), 
      cex=0.75, 
      col=2)
+```
 
 #Plot simple histograms of the degree distribution:
+```{r}
 par(mfrow=c(2,2)) # Set up a 2x2 display
 
 hist(ideg, 
@@ -1000,48 +1282,167 @@ hist(ideg+odeg,
      xlab="Total Degree", 
      main="Total Degree Distribution", 
      prob=TRUE)
+```
 
+```{r}
 par(mfrow=c(1,1)) # Restore display
+```
+
+```{r}
+10^.5/2
+```
+
 
 #Centrality scores can also be used with other sna routines, e.g., gplot()
+```{r}
 gplot(mids_1993, 
-      vertex.cex=(ideg+odeg)^0.5/2, 
+      vertex.cex=(ideg+odeg)^0.5/2, #total degree of a node - sum of in and out degree - arbitrary scale
       vertex.sides=50,
       label.cex=0.4,
       vertex.col=rgb(odeg/max(odeg),0,ideg/max(ideg)),
       displaylabels=TRUE)
+```
+```{r}
+?gplot()
+```
+
+vertex.sides	
+number of polygon sides for vertices; may be given as a vector, if vertices are to be of different types. By default, 50 sides are used (or 50 and 4, for two-mode data).
+
+```{r}
+gplot(mids_1993, 
+      vertex.cex=1, #total degree of a node - sum of in and out degree - used to arbitrary scalethe size of the node/vertex
+      vertex.sides=50,
+      label.cex=0.4,
+      vertex.col=rgb(odeg/max(odeg),0,ideg/max(ideg)),
+      edge.lwd = 1,
+      displaylabels=TRUE)
+```
 
 #Betweenness and closeness are also popular measures
+
+Proportion of shortest paths between all other pairs of nodes that the given node lies on
+
+```{r}
 bet <- betweenness(contig_1993, 
                    gmode="graph") # Geographic betweenness
-
 bet
+```
 
+```{r}
 gplot(contig_1993, 
-      vertex.cex=sqrt(bet)/25, 
+      vertex.cex=sqrt(bet)/50, 
       gmode="graph") # Use w/gplot
+```
+How far is each node from the other nodes in the graph
 
+```{r}
 clo <- closeness(contig_1993) # Geographic closeness
 clo # A large world after all?
+```
+
 
 #Can use sna routines to explore alternatives to the common measures. . .
+
+
+```{r}
+str(geodist(contig_1993))
+```
+
+Pull oit just the gdist from the generated list of counts and gdist
+
+```{r}
 contig_1993_gdist<-geodist(contig_1993)$gdist # matrix of geodesic distances
-
 contig_1993_gdist
+```
+Just for row one - country one which is USA
+
+```{r}
 1/sum(contig_1993_gdist[1,2:186]) # calculate closeness for country 1
+```
 
-which(contig_1993_gdist[,1]=="Inf") # disconnected matrix
+The above sums the entries and then 1 / 
 
-sum(1/contig_1993_gdist[1,2:186]) # alternate closeness for country 1
+Problem that some entries have INF
 
+```{r}
+which(contig_1993_gdist[1,]=="Inf") # disconnected matrix
+```
+
+Here we 1 / each entry and then sum it = where 1 / Inf = 0
+
+```{r}
+sum(1/contig_1993_gdist[1,2:186]) # alternate closeness for country 1; meed to ignore the 0 distance for self 1,1
+```
+
+```{r}
+1/Inf
+```
+
+sum across row one's columns
+
+```{r}
+infEntries.vec <- which(contig_1993_gdist[,1]=="Inf") #  matrix of unnconnected
+infEntries.vec
+
+```
+
+```{r}
+library(purrr)
+```
+
+
+```{r}
+`%not_in%` <- purrr::negate(`%in%`)
+```
+
+
+```{r}
+c("cat", "dog") %not_in% c("dog", "mouse")
+```
+
+```{r}
+filter <- 1:186 %not_in% infEntries.vec
+filter
+```
+
+```{r}
+nonInf.vec <- contig_1993_gdist[1,filter]
+nonInf.vec
+```
+
+```{r}
+length(nonInf.vec)
+```
+
+```{r}
+nonInf.vec <- nonInf.vec[nonInf.vec %not_in% 0]
+nonInf.vec
+```
+
+
+```{r}
+sum(1/nonInf.vec)
+```
+
+
+```{r}
 closeness2 <- function(x){ # Create an alternate closeness function!
   geo <- 1/geodist(x)$gdist # Get the matrix of 1/geodesic distance
   diag(geo) <- 0 # Define self-ties as 0
-  apply(geo, 1, sum) # Return sum(1/geodist) for each vertex
+  apply(geo, 1, sum) # Return sum(1/geodist) for each vertex, 1 = by row, sum each row
 }
+```
 
+```{r}
 clo2 <- closeness2(contig_1993) # Use our new function on contiguity data
 clo2
+```
+
+
+
+
+
 
 hist(clo2, xlab="Alt. Closeness", prob=TRUE) # Much better behaved!
 cor(clo2, bet) # Correlate with betweenness
